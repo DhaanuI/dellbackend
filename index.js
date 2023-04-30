@@ -1,26 +1,34 @@
 const express = require("express")
-const mongoose = require("mongoose")
 const app = express();
-app.use(express.json())
+const cors = require("cors")
+require("dotenv").config();
+const mongoose = require("mongoose")
+mongoose.set('strictQuery', true);
 
-const { connection } = require("./config/db")
+const { connection } = require("./config/db");
+const { productRoute } = require("./route/products.route");
+const { userRoute } = require("./route/user.route");
+const { cartRoute } = require("./route/cart.route");
 
-const { UserRoute } = require("./route/userRoute")
-const { FlightRoute } = require("./route/flightRoute")
-const { BookingRoute } = require("./route/bookingroute")
+app.use(cors())
 
-app.use("/", UserRoute)
-app.use("/flights", FlightRoute)
-app.use("/", BookingRoute)
+app.use("/products", productRoute)
+app.use("/users", userRoute)
+app.use('/cart', cartRoute)
+
+app.get("/", (req, res) => {
+    res.send("Homepage")
+})
 
 
-app.listen(4500, async () => {
+app.listen(process.env.port, async (req, res) => {
     try {
-        await connection;
+        await connection
         console.log("DB is connected")
     }
     catch (err) {
         console.log(err)
+
     }
-    console.log("Listening at Port 4500")
+    console.log("server is running")
 })
