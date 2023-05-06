@@ -1,34 +1,27 @@
 const express = require("express")
-const app = express();
+const app = express()
+app.use(express.json())
+require('dotenv').config()
+
 const cors = require("cors")
-require("dotenv").config();
-const mongoose = require("mongoose")
-mongoose.set('strictQuery', true);
-
-const { connection } = require("./config/db");
-const { productRoute } = require("./route/products.route");
-const { userRoute } = require("./route/user.route");
-const { cartRoute } = require("./route/cart.route");
-
 app.use(cors())
 
-app.use("/products", productRoute)
-app.use("/users", userRoute)
-app.use('/cart', cartRoute)
+const { connection } = require("./config/db")
+const { noticeRoute } = require("./route/noticeroute")
 
 app.get("/", (req, res) => {
-    res.send("Homepage")
+    res.send("Welcome to Backend")
 })
 
+app.use("/notice", noticeRoute)
 
-app.listen(process.env.port, async (req, res) => {
+app.listen(process.env.port, async () => {
     try {
-        await connection
+        await connection;
         console.log("DB is connected")
     }
     catch (err) {
-        console.log(err)
-
+        console.log(err, "DB is NOT connected")
     }
-    console.log("server is running")
+    console.log(`Server is running at ${process.env.port}`)
 })
